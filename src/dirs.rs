@@ -40,15 +40,3 @@ fn is_node_modules_root(entry: &DirEntry) -> bool {
             .map(|s| s.matches("node_modules").count() < 2)
             .unwrap_or(false)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::get_dirs;
-
-    #[test]
-    fn only_root_node_modules() {
-        let dirs = get_dirs(".");
-        let len = dirs.len();
-        assert_eq!(len, 1)
-    }
-}

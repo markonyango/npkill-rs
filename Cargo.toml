@@ -2,13 +2,20 @@
 name = "npkill-rs"
 version = "0.1.0"
 edition = "2021"
+authors = ["Mark Onyango"]
+description = "One tool to find them all, one tool to bring them all and from your drive delete them"
+keywords = [
+  "node_modules",
+  "npm",
+  "npkill",
+  "cli"
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 bytesize = "1.1.0"
 crossterm = "0.26.0"
-jwalk = "0.8.1"
 thiserror = "1.0.38"
 tui = "0.19.0"
 walkdir = "2.3.2"

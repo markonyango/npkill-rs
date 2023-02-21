@@ -6,7 +6,7 @@ use tui::{
     Frame,
 };
 
-use crate::AppState;
+use crate::state::AppState;
 
 pub fn ui<B: Backend>(f: &mut Frame<B>, state: &mut AppState) {
     let parent_chunk = Layout::default()
@@ -28,9 +28,12 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, state: &mut AppState) {
         .border_type(BorderType::Rounded);
 
     let header_text = if state.loading {
-        "loading..."
+        "loading...".to_string()
     } else {
-        "To delete a folder press 'd' on your selection."
+        format!(
+            "To delete a folder press 'd' on your selection. Found {} folders",
+            state.dirs.len()
+        )
     };
 
     let header_paragraph = Paragraph::new(header_text).block(header_block);
