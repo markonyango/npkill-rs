@@ -7,6 +7,7 @@ pub struct AppState {
     pub list_state: TableState,
     pub dirs: Vec<NodeModuleEntry>,
     pub loading: bool,
+    pub freed: u64,
 }
 
 impl AppState {
@@ -17,5 +18,9 @@ impl AppState {
         state.loading = true;
 
         state
+    }
+
+    pub fn free_by_amount(&mut self, amount: u64) {
+        self.freed += amount;
     }
 }

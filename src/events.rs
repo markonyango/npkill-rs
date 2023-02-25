@@ -2,7 +2,7 @@ use std::{
     error::Error,
     io::Stdout,
     sync::mpsc::{Receiver, Sender},
-    time::{Duration, Instant},
+    time::{Duration, Instant}, path::PathBuf,
 };
 
 use crossterm::{
@@ -54,13 +54,25 @@ pub fn handle_event(
                     }
                 }
             }
+            KeyCode::Char('d') => {
+                if let Some(index) = state.list_state.selected() {
+                    let NodeModuleEntry { dir_entry, size } = state.dirs.get(index).unwrap();
+                    let path: PathBuf = dir_entry.path().into();
+
+                    std::fs::remove_dir_all(path)?;
+                    
+                    state.free_by_amount(*size);
+                    state.dirs.remove(index);
+                    state.list_state.select(Some(index - 1));
+                };
+            }
             _ => {}
         },
         Event::Tick => {}
         Event::ListData(list_data) => {
             state.dirs = list_data;
             state.loading = false;
-        }
+        },
     }
 
     Ok(())

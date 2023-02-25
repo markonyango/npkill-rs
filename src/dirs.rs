@@ -1,10 +1,9 @@
-use bytesize::ByteSize;
 use walkdir::{DirEntry, WalkDir};
 
 #[derive(Debug)]
 pub struct NodeModuleEntry {
     pub dir_entry: DirEntry,
-    pub size: String,
+    pub size: u64,
 }
 
 pub fn get_dirs(path: &str) -> Vec<NodeModuleEntry> {
@@ -20,16 +19,14 @@ pub fn get_dirs(path: &str) -> Vec<NodeModuleEntry> {
         .collect()
 }
 
-pub fn get_dir_size(path: &DirEntry) -> String {
-    let size = WalkDir::new(path.path())
+pub fn get_dir_size(path: &DirEntry) -> u64 {
+    WalkDir::new(path.path())
         .into_iter()
         .filter_map(Result::ok)
         .filter(|e| e.file_type().is_file())
         .fold(0, |size, item| {
-            size + item.metadata().unwrap().len() as usize
-        });
-
-    ByteSize(size as u64).to_string()
+            size + item.metadata().unwrap().len()
+        })
 }
 
 fn is_node_modules_root(entry: &DirEntry) -> bool {

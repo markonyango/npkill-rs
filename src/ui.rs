@@ -37,10 +37,12 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, state: &mut AppState) {
     };
 
     let header_paragraph = Paragraph::new(header_text).block(header_block);
-
+    
     let footer_block = Block::default()
-        .borders(Borders::ALL)
-        .border_type(BorderType::Rounded);
+    .borders(Borders::ALL)
+    .border_type(BorderType::Rounded);
+
+    let footer_paragraph = Paragraph::new(format!("Freed so far: {}", bytesize::ByteSize(state.freed))).block(footer_block);
 
     let list_block = Block::default()
         .borders(Borders::ALL)
@@ -58,7 +60,7 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, state: &mut AppState) {
         .map(|dir| {
             Row::new(vec![
                 Cell::from(String::from(dir.dir_entry.path().to_str().unwrap())),
-                Cell::from(dir.size.clone()),
+                Cell::from(bytesize::ByteSize(dir.size as u64).to_string()),
             ])
         })
         .collect();
@@ -78,5 +80,5 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, state: &mut AppState) {
 
     f.render_widget(header_paragraph, parent_chunk[0]);
     f.render_widget(list_block, parent_chunk[1]);
-    f.render_widget(footer_block, parent_chunk[2]);
+    f.render_widget(footer_paragraph, parent_chunk[2]);
 }
