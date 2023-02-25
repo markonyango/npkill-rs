@@ -1,14 +1,14 @@
 use std::{error::Error, sync::mpsc, thread, time::Duration};
 
+use args::Cli;
+use clap::Parser;
 use crossterm::{
     event::EnableMouseCapture,
     execute,
     terminal::{enable_raw_mode, EnterAlternateScreen},
 };
 
-use events::handle_dir_event;
 use tui::{backend::CrosstermBackend, Terminal};
-use ui::ui;
 
 mod dirs;
 mod error;
@@ -17,10 +17,12 @@ mod prelude;
 mod state;
 mod ui;
 mod utils;
+mod args;
 
 fn main() -> Result<(), Box<dyn Error>> {
+    let Cli { path } = Cli::parse();
+    
     let mut app_state = state::AppState::new();
-    let path = std::env::args().nth(1).unwrap_or(".".to_string());
 
     let (tx, rx) = mpsc::channel();
     let tick_rate = Duration::from_millis(200);
@@ -30,7 +32,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     thread::spawn(move || events::handle_key_event(tick_rate, input_tx));
 
-    thread::spawn(move || handle_dir_event(&path, list_data_tx));
+    thread::spawn(move || events::handle_dir_event(&path, list_data_tx));
 
     let backend = CrosstermBackend::new(std::io::stdout());
     let mut terminal = Terminal::new(backend)?;
@@ -40,7 +42,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     execute!(std::io::stdout(), EnterAlternateScreen, EnableMouseCapture)?;
 
     loop {
-        terminal.draw(|f| ui(f, &mut app_state))?;
+        terminal.draw(|f| ui::ui(f, &mut app_state))?;
 
         events::handle_event(&mut terminal, &rx, &mut app_state)?;
     }
