@@ -33,7 +33,10 @@ fn is_node_modules_root(entry: &DirEntry) -> bool {
     entry.path().is_dir()
         && entry
             .path()
-            .to_str()
-            .map(|s| s.matches("node_modules").count() < 2)
-            .unwrap_or(false)
+            .parent()
+            .map_or(true, |parent| {
+                !parent
+                    .components()
+                    .any(|c| c.as_os_str() == "node_modules")
+            })
 }
